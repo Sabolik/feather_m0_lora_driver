@@ -272,6 +272,16 @@ void system_init(void)
 
 	// GPIO on PA15
 
+	gpio_set_pin_level(Sensor_Gnd,
+	                   // <y> Initial level
+	                   // <id> pad_initial_level
+	                   // <false"> Low
+	                   // <true"> High
+	                   false);
+
+	// Set pin direction to output
+	gpio_set_pin_direction(Sensor_Gnd, GPIO_DIRECTION_OUT);
+
 	gpio_set_pin_function(Sensor_Gnd, GPIO_PIN_FUNCTION_OFF);
 
 	// GPIO on PA17
@@ -289,6 +299,16 @@ void system_init(void)
 	gpio_set_pin_function(RedLed, GPIO_PIN_FUNCTION_OFF);
 
 	// GPIO on PA20
+
+	gpio_set_pin_level(Sensor_Vcc,
+	                   // <y> Initial level
+	                   // <id> pad_initial_level
+	                   // <false"> Low
+	                   // <true"> High
+	                   false);
+
+	// Set pin direction to output
+	gpio_set_pin_direction(Sensor_Vcc, GPIO_DIRECTION_OUT);
 
 	gpio_set_pin_function(Sensor_Vcc, GPIO_PIN_FUNCTION_OFF);
 

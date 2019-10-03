@@ -14,7 +14,7 @@ typedef void (*hal_samd_usb_rx_done_cb_t)(uint8_t* data, uint16_t len);
 void hal_samd_system_init( void );
 void hal_samd_sleep( void );
 
-void hal_samd_io_init (void* cb);
+void hal_samd_io_irq_init (void* cb);
 void hal_samd_set_pin_level_rfm_cs( void );
 void hal_samd_clr_pin_level_rfm_cs( void );
 void hal_samd_set_pin_level_rfm_rst( void );
@@ -26,9 +26,6 @@ void hal_samd_clr_pin_level_red_led( void );
 
 uint8_t hal_samd_spi (uint8_t out);
 
-void hal_samd_rtc_isr_cb( void* cb );
-void hal_samd_rtc_init( void );
-void hal_samd_rtc_clear_isr_flag( void );
 uint32_t hal_samd_rtc_get_time( void );
 void hal_samd_rtc_set_wakeuptime( uint32_t val );
 

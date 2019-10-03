@@ -4,10 +4,10 @@ versions:
   api: '1.0'
   backend: 1.6.148
   commit: 605f106ab95776472e3febf2fac2471441fb1816
-  content: 1.0.1600
+  content: 1.0.1635
   content_pack_name: acme-packs-all
   format: '2'
-  frontend: 1.6.1881
+  frontend: 1.6.1884
 board:
   identifier: CustomBoard
   device: SAMD21G18A-AF
@@ -914,7 +914,7 @@ pads:
   Sensor_Gnd:
     name: PA15
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-AF::pad::PA15
-    mode: Peripheral IO
+    mode: Digital output
     user_label: Sensor_Gnd
     configuration: null
   RedLed:
@@ -926,7 +926,7 @@ pads:
   Sensor_Vcc:
     name: PA20
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-AF::pad::PA20
-    mode: Peripheral IO
+    mode: Digital output
     user_label: Sensor_Vcc
     configuration: null
   PA22:

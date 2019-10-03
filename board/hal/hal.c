@@ -7,6 +7,8 @@
 
 void hal_samd_system_init( void ) {
     system_init();
+    // RTC interrupt globally enabled, for some reason not enabled via atmel start
+    NVIC_EnableIRQ(RTC_IRQn);
 }
 
 void hal_samd_sleep( void ) {
@@ -14,7 +16,7 @@ void hal_samd_sleep( void ) {
     // we are far from now enough to go to sleep
     if( d > 10 )
     {
-        // clear any pending interrupts
+        // clear any pending interrupts before sleep
         hri_rtcmode0_clear_INTFLAG_OVF_bit(RTC);
         hri_rtcmode0_clear_INTFLAG_CMP0_bit(RTC);
         sleep(3);
@@ -24,7 +26,7 @@ void hal_samd_sleep( void ) {
 // -----------------------------------------------------------------------------
 // I/O
 
-void hal_samd_io_init (void* cb) {
+void hal_samd_io_irq_init (void* cb) {
     ext_irq_register(PIN_PA09, (ext_irq_cb_t)cb);
 }
 
@@ -78,23 +80,8 @@ uint8_t hal_samd_spi (uint8_t out) {
 // -----------------------------------------------------------------------------
 // TIME
 
-static void (*rtc_irq_cb_t)(void) = NULL;
-
 void RTC_Handler(void) {
-    rtc_irq_cb_t();
-}
-
-void hal_samd_rtc_isr_cb( void* cb ) {
-    rtc_irq_cb_t = cb;
-}
-
-void hal_samd_rtc_init( void ) {
-    /* Enable RTC NVIC Interrupt Line */
-    NVIC_EnableIRQ(RTC_IRQn);
-}
-
-void hal_samd_rtc_clear_isr_flag( void ) {
-    hri_rtcmode0_clear_INTFLAG_OVF_bit(RTC);
+    // just wake up and clear flag
     hri_rtcmode0_clear_INTFLAG_CMP0_bit(RTC);
 }
 
