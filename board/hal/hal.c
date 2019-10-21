@@ -136,7 +136,6 @@ void hal_samd_i2c_readBlock(uint8_t reg_addr, uint8_t *read_buff, uint8_t length
 // USB
 
 static uint8_t terminalReady = 0;
-static uint8_t receptionEnabled = 0;
 static hal_samd_usb_rx_done_cb_t hal_rx_done_cb = NULL;
 static hal_samd_usb_tx_done_cb_t hal_tx_done_cb = NULL;
 
@@ -163,10 +162,8 @@ static struct usbd_descriptors single_desc[]
 #endif
 };
 
-#define INIT_SEQUENCE           "LMiC Modem\r\n"
-
 /** Buffers to receive and echo the communication bytes. */
-static uint8_t usbd_cdc_buffer[CDCD_ECHO_BUF_SIZ] = {INIT_SEQUENCE};
+static uint8_t usbd_cdc_buffer[CDCD_ECHO_BUF_SIZ];
 
 /** Ctrl endpoint buffer */
 static uint8_t ctrl_buffer[64];
@@ -187,8 +184,6 @@ static bool usb_device_cb_bulk_out(const uint8_t ep, const enum usb_xfer_code rc
  */
 static bool usb_device_cb_bulk_in(const uint8_t ep, const enum usb_xfer_code rc, const uint32_t count)
 {
-    cdcdf_acm_read((uint8_t *)usbd_cdc_buffer, sizeof(usbd_cdc_buffer));
-    
 	/* all data sent */
     hal_tx_done_cb();
 
@@ -202,21 +197,8 @@ static bool usb_device_cb_bulk_in(const uint8_t ep, const enum usb_xfer_code rc,
 static bool usb_device_cb_state_c(usb_cdc_control_signal_t state)
 {
 	if (state.rs232.DTR) {
-		/* Callbacks must be registered after endpoint allocation */
-		cdcdf_acm_register_callback(CDCDF_ACM_CB_READ, (FUNC_PTR)usb_device_cb_bulk_out);
-		cdcdf_acm_register_callback(CDCDF_ACM_CB_WRITE, (FUNC_PTR)usb_device_cb_bulk_in);
-		/* Start Rx */
-        //cdcdf_acm_read((uint8_t *)usbd_cdc_buffer, sizeof(usbd_cdc_buffer));
-        /* Start Tx with initial string to be printed */
-        memcpy((uint8_t *)usbd_cdc_buffer, (uint8_t *)INIT_SEQUENCE, sizeof(INIT_SEQUENCE));
-        cdcdf_acm_write((uint8_t *)usbd_cdc_buffer, sizeof(INIT_SEQUENCE));
-        
-        terminalReady = 1;
+        // Data terminal ready
 	}
-    else
-    {
-        terminalReady = 0;
-    }
 
 	/* No error. */
 	return false;
@@ -264,23 +246,32 @@ void hal_samd_usb_serial_start(hal_samd_usb_rx_done_cb_t rx_done_cb, hal_samd_us
     if ( hal_rx_done_cb != NULL &&
          hal_tx_done_cb != NULL )
     {
+        /* Callbacks must be registered after endpoint allocation */
         cdcdf_acm_register_callback(CDCDF_ACM_CB_STATE_C, (FUNC_PTR)usb_device_cb_state_c);
+        cdcdf_acm_register_callback(CDCDF_ACM_CB_READ, (FUNC_PTR)usb_device_cb_bulk_out);
+        cdcdf_acm_register_callback(CDCDF_ACM_CB_WRITE, (FUNC_PTR)usb_device_cb_bulk_in);
+        
+        terminalReady = 1;
     }
 }
 
-void hal_samd_usb_serial_startrx(void) {
-    receptionEnabled = 1;
-    cdcdf_acm_read((uint8_t *)usbd_cdc_buffer, sizeof(usbd_cdc_buffer));
+uint8_t hal_samd_usb_serial_startrx(void) {
+    bool success = false;
+    if ( terminalReady )
+    {
+        success = !cdcdf_acm_read((uint8_t *)usbd_cdc_buffer, sizeof(usbd_cdc_buffer));
+    }
+    return (uint8_t)success;
 }
 
 uint8_t hal_samd_usb_serial_starttx(uint8_t* data, uint16_t len) {
+    bool success = false;
     if ( terminalReady )
     {
         memcpy(usbd_cdc_buffer, data, len);
-        cdcdf_acm_write((uint8_t *)usbd_cdc_buffer, len);
+        success = !cdcdf_acm_write((uint8_t *)usbd_cdc_buffer, len);
     }
-    
-    return terminalReady;
+    return (uint8_t)success;
 }
 // -----------------------------------------------------------------------------
 // EEPROM

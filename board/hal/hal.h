@@ -41,7 +41,7 @@ void hal_samd_usb_serial_deinit(void);
 uint8_t hal_samd_usb_serial_initialized(void);
 void hal_samd_usb_serial_start(hal_samd_usb_rx_done_cb_t rx_done_cb, hal_samd_usb_tx_done_cb_t tx_done_cb);
 uint8_t hal_samd_usb_serial_is_off(void);
-void hal_samd_usb_serial_startrx(void);
+uint8_t hal_samd_usb_serial_startrx(void);
 uint8_t hal_samd_usb_serial_starttx(uint8_t* data, uint16_t len);
 
 void hal_samd_persistance_init(void);
