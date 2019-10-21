@@ -237,6 +237,11 @@ uint8_t hal_samd_usb_serial_is_off(void)
     return usbdc_get_state() == USBD_S_OFF;
 }
 
+uint8_t hal_samd_usb_serial_is_configured(void)
+{
+    return usbdc_get_state() == USBD_S_CONFIG;
+}
+
 void hal_samd_usb_serial_start(hal_samd_usb_rx_done_cb_t rx_done_cb, hal_samd_usb_tx_done_cb_t tx_done_cb)
 {
     hal_tx_done_cb = tx_done_cb;
