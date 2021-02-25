@@ -198,6 +198,10 @@ static bool usb_device_cb_state_c(usb_cdc_control_signal_t state)
 {
 	if (state.rs232.DTR) {
         // Data terminal ready
+        cdcdf_acm_register_callback(CDCDF_ACM_CB_READ, (FUNC_PTR)usb_device_cb_bulk_out);
+        cdcdf_acm_register_callback(CDCDF_ACM_CB_WRITE, (FUNC_PTR)usb_device_cb_bulk_in);
+        /* Start Rx */
+        hal_samd_usb_serial_startrx();
 	}
 
 	/* No error. */
@@ -253,8 +257,6 @@ void hal_samd_usb_serial_start(hal_samd_usb_rx_done_cb_t rx_done_cb, hal_samd_us
     {
         /* Callbacks must be registered after endpoint allocation */
         cdcdf_acm_register_callback(CDCDF_ACM_CB_STATE_C, (FUNC_PTR)usb_device_cb_state_c);
-        cdcdf_acm_register_callback(CDCDF_ACM_CB_READ, (FUNC_PTR)usb_device_cb_bulk_out);
-        cdcdf_acm_register_callback(CDCDF_ACM_CB_WRITE, (FUNC_PTR)usb_device_cb_bulk_in);
         
         terminalReady = 1;
     }
