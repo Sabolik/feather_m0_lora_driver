@@ -132,6 +132,15 @@ void hal_samd_i2c_readBlock(uint8_t reg_addr, uint8_t *read_buff, uint8_t length
     io_read(I2C_0_io, read_buff, length);
 }
 
+void hal_samd_i2c_writeBlock(uint8_t reg_addr, const uint8_t *write_buff, uint8_t length)
+{
+    uint8_t writeData[length+1];
+    writeData[0] = reg_addr;
+    memcpy(writeData + 1, write_buff, length);
+
+    io_write(I2C_0_io, writeData, sizeof(writeData));
+}
+
 // -----------------------------------------------------------------------------
 // USB
 

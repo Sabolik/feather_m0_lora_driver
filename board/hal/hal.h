@@ -35,6 +35,7 @@ void hal_samd_disable_irq( void );
 void hal_samd_i2c_ioInit(int16_t addr);
 void hal_samd_i2c_writeByte(uint8_t reg_addr, uint8_t data);
 void hal_samd_i2c_readBlock(uint8_t reg_addr, uint8_t *read_buff, uint8_t length);
+void hal_samd_i2c_writeBlock(uint8_t reg_addr, const uint8_t *write_buff, uint8_t length);
 
 void hal_samd_usb_serial_init(void);
 void hal_samd_usb_serial_deinit(void);
