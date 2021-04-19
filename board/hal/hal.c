@@ -126,9 +126,9 @@ void hal_samd_i2c_writeByte(uint8_t reg_addr, uint8_t data)
 
 void hal_samd_i2c_readBlock(uint8_t reg_addr, uint8_t *read_buff, uint8_t length)
 {
-    uint8_t addrLength = sizeof(reg_addr);
+    uint8_t writeData[] = {reg_addr};
     
-    io_write(I2C_0_io, &reg_addr, addrLength);
+    io_write(I2C_0_io, writeData, sizeof(writeData));
     io_read(I2C_0_io, read_buff, length);
 }
 
